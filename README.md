@@ -51,6 +51,72 @@ References:
 * https://doc.qt.io/qt-5/stylesheet.html
 * https://doc.qt.io/qt-5/stylesheet-syntax.html
 
+### The `cssClass` dynamic Qt property
+
+When styling of widgets should be dynamically updated based on the application current state, the relevant states may be described using CSS classes.
+
+In the context of Slicer custom application, CSS classes may be associated with the Qt dynamic property called `cssClass`.
+
+These class names may be set/added/removed from a specific Qt widget using `setCssClass/addCssClass/removeCssClass` functions available in the `SlicerCustomAppUtilities` Python module.
+
+For example, styling of `QPushButton` based on a "CSS" class called `widget--color-light` associated with one of its ancestors may be done doing the following:
+
+```
+QWidget[cssClass~="widget--color-light"] QPushButton {
+    background-color: #666666;
+}
+```
+
+See references below to learn more about the `[attr~=value]` syntax.
+
+After setting, adding or removing CSS class, the function `SlicerCustomAppUtilities.polish()` should be called to ensure the stylesheet is re-applied to consider the updated `cssClass` property.
+
+References:
+* https://doc.qt.io/qt-5/properties.html#dynamic-properties
+* https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors#syntax
+
+### CSS class naming convention
+
+The naming convention based on BEM (Block, Element, Modifier) may be used.
+
+In the example below, the classes `widget--color-light` and `widget--color-dark` are used where
+* `widget` is the `Block`
+* `color` is the `Element`
+* `light` or `dark` are the `Modifier`
+
+```
+/* General styling */
+QWidget {
+    background-color: #2a2a2a;
+    color: #B7B7B7;
+}
+
+QPushButton {
+    background-color: #434343;
+}
+
+/* Light colors */
+QWidget[cssClass~="widget--color-light"] QWidget {
+    background-color: #434343;
+}
+
+QWidget[cssClass~="widget--color-light"] QPushButton {
+    background-color: #666666;
+}
+
+/* Dark colors */
+QWidget[cssClass~="widget--color-dark"] QWidget {
+    background-color: #2a2a2a;
+}
+
+QWidget[cssClass~="widget--color-dark"] QPushButton {
+    background-color: #434343;
+}
+```
+
+References:
+* https://getbem.com/naming/
+
 ## License
 
 This project template is distributed under the Apache 2.0 license. Please see
