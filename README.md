@@ -29,6 +29,28 @@ message(STATUS "Remote - ${extension_name} [OK]")
 list(APPEND Slicer_EXTENSION_SOURCE_DIRS ${${extension_name}_SOURCE_DIR}/Modules/Scripted/SlicerCustomAppUtilities)
 ```
 
+## Styling
+
+### Stylesheet
+
+The custom application Qt stylesheet may be defined in a single `Home.qss` file.
+
+Corresponding stylesheet may be applied to the application (`slicer.app`) during module initialization using the `SlicerCustomAppUtilities.applyStyle()` function.
+
+CSS rules should be organized in the stylesheet files from the most general to the most specific rules. Use of `/* */` comment is recommended to group the rules.
+
+```
+/*  General styling */
+
+/* Light colors */
+
+/* Dark colors */
+```
+
+References:
+* https://doc.qt.io/qt-5/stylesheet.html
+* https://doc.qt.io/qt-5/stylesheet-syntax.html
+
 ## License
 
 This project template is distributed under the Apache 2.0 license. Please see
