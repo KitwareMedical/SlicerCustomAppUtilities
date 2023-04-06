@@ -117,6 +117,71 @@ QWidget[cssClass~="widget--color-dark"] QPushButton {
 References:
 * https://getbem.com/naming/
 
+## CMake Modules
+
+### DownloadGitHubReleaseAsset
+
+Download a GitHub release asset.
+
+The module can be used when running in cmake -P script mode and it requires
+the environment variable `GITHUB_TOKEN` to be set.
+
+For example:
+
+```cmake
+  set(EP_DOWNLOAD_DIR ${CMAKE_BINARY_DIR})
+  set(EP_SOURCE_DIR ${CMAKE_BINARY_DIR}/${proj})
+
+  set(asset_filename "<assetname>")
+  set(asset_sha256 "<assetsha256>")
+
+  # The CMake function _ep_write_extractfile_script is internally provided by the
+  # ExternalProject CMake module.
+  if(NOT COMMAND _ep_write_extractfile_script)
+    message(FATAL_ERROR "_ep_write_extractfile_script CMake function is not available")
+  endif()
+  _ep_write_extractfile_script(
+    "${EP_DOWNLOAD_DIR}/${proj}-extract-archive.cmake" # script_filename
+    "${proj}" # name
+    "${EP_DOWNLOAD_DIR}/${asset_filename}" # filename
+    "${EP_SOURCE_DIR}" # directory
+    "" # options (introduced in CMake 3.24 through Kitware/CMake@a283e58b5)
+    )
+
+  ExternalProject_Add(${proj}
+    ${${proj}_EP_ARGS}
+    DOWNLOAD_DIR ${EP_DOWNLOAD_DIR}
+    DOWNLOAD_COMMAND ${CMAKE_COMMAND}
+      -DGITHUB_ORG:STRING=<organization>
+      -DGITHUB_REPO:STRING=<repository>
+      -DGITHUB_RELEASE:STRING=<releasename>
+      -DGITHUB_ASSET_FILENAME:STRING=${asset_filename}
+      -DEXPECTED_SHA256:STRING=${asset_sha256}
+      -DOUTPUT_DIR:STRING=${EP_DOWNLOAD_DIR}
+      -P ${SlicerCustomAppUtilities_SOURCE_DIR}/CMake/DownloadGitHubReleaseAsset.cmake
+    COMMAND ${CMAKE_COMMAND}
+      -P "${EP_DOWNLOAD_DIR}/${proj}-extract-archive.cmake"
+    SOURCE_DIR ${EP_SOURCE_DIR}
+    BUILD_IN_SOURCE 1
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    DEPENDS
+      ${${proj}_DEPENDS}
+    )
+  set(${proj}_DIR ${EP_SOURCE_DIR})
+```
+
+where the following placeholders would need to be updated:
+
+```
+<assetname>
+<assetsha256>
+<organization>
+<repository>
+<releasename>
+```
+
 ## License
 
 This project template is distributed under the Apache 2.0 license. Please see
